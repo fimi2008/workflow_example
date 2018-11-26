@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.lionxxw.flowabledemo.dao.CustomerDao">
+    <sql id="Base_Column_List">
+        id, name, status,pro_code,owner_id,owner_name,pubsea,create_time,update_time
+    </sql>
+
+    <update id="update" parameterType="top.lionxxw.flowabledemo.entity.Customer">
+        UPDATE
+        tab_customer
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="ownerName != null">
+                owner_name = #{ownerName},
+            </if>
+            <if test="ownerId != null">
+                owner_id = #{ownerId},
+            </if>
+            <if test="pubsea != null">
+                pubsea = #{pubsea},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findPubSea" resultType="top.lionxxw.flowabledemo.entity.Customer">
+        SELECT <include refid="Base_Column_List"/>
+        FROM tab_customer
+        where pubsea = true
+    </select>
+
+    <select id="findCustomer" resultType="top.lionxxw.flowabledemo.entity.Customer">
+        SELECT <include refid="Base_Column_List"/>
+        FROM tab_customer
+        where pubsea = false
+    </select>
+</mapper>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>公海池</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<nav th:replace="common/top::top"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="common/left::left(6)"></nav>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">公海池</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>客户名称</th>
+                        <th>状态</th>
+                        <th>行业</th>
+                        <th>创建时间</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="data : ${pubseas}">
+                        <td th:text="${data.id}">LeaveBill:1:4</td>
+                        <td th:text="${data.name}">请假流程</td>
+                        <td th:text="${data.statusName}">请假流程</td>
+                        <td th:text="${data.proName}">请假流程</td>
+                        <td th:text="${data.createTime != null}?${#calendars.format(data.createTime,'yyyy-MM-dd HH:mm:ss')}:''" >2018-02-25 17:28:35</td>
+                        <td th:text="${data.updateTime != null}?${#calendars.format(data.updateTime,'yyyy-MM-dd HH:mm:ss')}:''" >2018-02-25 17:28:35</td>
+                        <td>
+                            <a th:href="@{/pubsea/claim(customerId=${data.id})}" style="margin-right: 5px">认领</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

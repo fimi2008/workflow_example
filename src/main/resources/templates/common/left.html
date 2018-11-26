@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div class="col-sm-3 col-md-2 sidebar" th:fragment="left(index)">
+    <ul class="nav nav-sidebar">
+        <li th:classappend="${index == 0}?active"><a href="/apply/list">我的申请</a></li>
+        <li th:classappend="${index == 1}?active"><a href="/task/list">我的审批</a></li>
+        <li th:classappend="${index == 2}?active"><a href="/deploy">部署流程</a></li>
+        <li th:classappend="${index == 3}?active"><a href="/apply/all">全部申请</a></li>
+        <li th:classappend="${index == 4}?active"><a href="/user/list">系统用户</a></li>
+        <li th:classappend="${index == 5}?active"><a href="/model/list">流程模型</a></li>
+        <li th:classappend="${index == 6}?active"><a href="/pubsea/list">公海池</a></li>
+        <li th:classappend="${index == 7}?active"><a href="/user/pro/list">用户行业关系</a></li>
+    </ul>
+</div>
+</html>

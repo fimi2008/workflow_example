@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>流程模型</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<nav th:replace="common/top::top"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="common/left::left(5)"></nav>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">流程模型</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>模型名称</th>
+                        <th>key</th>
+                        <th>类型</th>
+                        <th>版本</th>
+                        <th>部署ID</th>
+                        <th>创建时间</th>
+                        <th>最后更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="data : ${models}">
+                        <td th:text="${data.id}">LeaveBill:1:4</td>
+                        <td th:text="${data.name}">请假流程</td>
+                        <td th:text="${data.key}">1</td>
+                        <td th:text="${data.category}">LeaveBill</td>
+                        <td th:text="${data.version}">LeaveBill</td>
+                        <td th:text="${data.deploymentId}">LeaveBill</td>
+                        <td th:text="${data.createTime != null}?${#calendars.format(data.createTime,'yyyy-MM-dd HH:mm:ss')}:''" >2018-02-25 17:28:35</td>
+                        <td th:text="${data.lastUpdateTime != null}?${#calendars.format(data.lastUpdateTime,'yyyy-MM-dd HH:mm:ss')}:''" >2018-02-25 17:28:35</td>
+                        <td>
+                            <a th:href="@{/modeler.html(modelId=${data.id})}" style="margin-right: 5px;">编辑</a>
+                            <a th:attrappend="objId=${data.id}" href="javascript:;" class="deployBtn">发布流程</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#applyWinModal">新建模型
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="applyWinModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">新建流程名称</h4>
+            </div>
+            <div class="modal-body">
+                <form id="myForm" action="/model/add" method="post">
+                    <div class="form-group">
+                        <label for="name">流程名称</label>
+                        <input type="text" name="name" id="name" class="form-control" >
+                    </div>
+                    <div class="form-group">
+                        <label for="key">key</label>
+                        <input type="text" name="key" id="key" class="form-control" >
+                    </div>
+                    <div class="form-group">
+                        <label for="version">版本</label>
+                        <input type="number" name="version" id="version" class="form-control" >
+                    </div>
+                    <div class="form-group">
+                        <label for="description">描述</label>
+                        <textarea class="form-control" name="description" id="description"
+                                  placeholder="可以写点啥,让使用更清楚这个模式的用途"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#applyWinModal .btn-primary').on('click', function () {
+           $('#myForm').submit();
+        });
+        $('.deployBtn').on('click',function () {
+            var id = $(this).attr('objId');
+            $.ajax({
+                url: '/model/'+id+'/deployment',
+                type: 'POST',
+                data: {},
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    if (data.status) {
+                        alert(data.reason);
+                        window.location.reload();
+                    } else {
+                        alert(data.reason);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        })
+    });
+</script>
+</body>
+</html>

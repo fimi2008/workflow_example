@@ -1,0 +1,20 @@
+server:
+  port: 9000
+mybatis:
+  typeAliasesPackage: top.lionxxw.flowabledemo.entity
+  mapperLocations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+spring:
+  application:
+    name: flowable-demo
+  thymeleaf:
+    encoding: utf-8  #设置编码模式
+    cache: false  #不开启模板缓存
+    content-type: text/html  #以html形式文档类型
+    suffix: ".html" #界面以.html文件结尾
+    mode: LEGACYHTML5
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/activityDB?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: root
+    password: root

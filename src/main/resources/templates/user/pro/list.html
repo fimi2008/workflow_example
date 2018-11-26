@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>系统用户</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<nav th:replace="common/top::top"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="common/left::left(7)"></nav>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">用户行业审批关系</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户</th>
+                        <th>行业</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="data : ${userProList}">
+                        <td th:text="${data.id}">LeaveBill:1:4</td>
+                        <td th:text="${data.userName}">LeaveBill:1:4</td>
+                        <td th:text="${data.proName}">请假流程</td>
+                        <td>
+                            <a th:href="@{/user/pro/del(id=${data.id})}" style="margin-right: 5px">解除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#proCodeModal">添加
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="proCodeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">行业审批人</h4>
+            </div>
+            <div class="modal-body">
+                <form id="myForm">
+                    <div class="form-group">
+                        <label for="proCode">行业</label>
+                        <select class="form-control" name="proCode" id="proCode">
+                            <option th:each="pro : ${pros}" th:value="${pro.code}"
+                                    th:text="${pro.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userId">审批人</label>
+                        <select class="form-control" name="userId" id="userId">
+                            <option th:each="user : ${users}" th:value="${user.id}"
+                                    th:text="${user.userName}"></option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#proCodeModal .btn-primary').on('click', function () {
+            $.ajax({
+                url: '/user/pro/add',
+                type: 'POST',
+                data: $('#myForm').serialize(),
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    if (data.status) {
+                        $('#proCodeModal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert(data.reason);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

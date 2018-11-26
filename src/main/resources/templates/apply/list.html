@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>我的申请</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<nav th:replace="common/top::top"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="common/left::left(0)"></nav>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">我的申请</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>机会名称</th>
+                        <th>申请人</th>
+                        <th>状态</th>
+                        <th>申请时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="data : ${applies}">
+                        <td th:text="${data.id}">LeaveBill:1:4</td>
+                        <td th:text="${data.chanceName}">请假流程</td>
+                        <td th:text="${data.applyUserName}">1</td>
+                        <td th:text="${data.statusName}">LeaveBill</td>
+                        <td th:text="${data.createTime != null}?${#calendars.format(data.createTime,'yyyy-MM-dd HH:mm:ss')}:''" >2018-02-25 17:28:35</td>
+                        <td>
+                            <a th:href="@{/apply/detail(id=${data.id})}">查询审批状态</a>
+                            <a th:if="${data.status==1}" target="_blank" th:href="@{/apply/viewCurrentImage(id=${data.id})}">查询当前流程图</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#applyWinModal">申请赢单
+                    </button>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#leaveModal">请假
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="applyWinModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">提交赢单审批</h4>
+            </div>
+            <div class="modal-body">
+                <form id="applyForm">
+                    <div class="form-group">
+                        <label for="chanceId">商机</label>
+                        <select class="form-control" name="chanceId" id="chanceId">
+                            <option th:each="chance : ${chances}" th:value="${chance.chanceId}"
+                                    th:text="${chance.chanceName}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">备注</label>
+                        <textarea class="form-control" name="description" id="description"
+                                  placeholder="可以写点啥,说明下你的原因"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="leaveModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">请假</h4>
+            </div>
+            <div class="modal-body">
+                <form id="leaveForm">
+                    <div class="form-group">
+                        <label for="chanceId">天数</label>
+                        <input type="number" name="days"  class="form-control" placeholder="请填写请假天数"/>
+                    </div>
+                    <div class="form-group">
+                        <label>备注</label>
+                        <textarea class="form-control" name="description"
+                                  placeholder="可以写点啥,说明下你的原因"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#applyWinModal .btn-primary').on('click', function () {
+            var formData = new FormData();
+            var chance = $('#chanceId option:selected');
+            console.log(chance.val());
+            console.log(chance.text());
+            formData.append("chanceId", chance.val());
+            formData.append("chanceName", chance.text());
+            // formData.append("description",$('#description').val());
+            console.log(formData);
+            $.ajax({
+                url: '/apply/add',
+                type: 'POST',
+                data: {"chanceId": chance.val(), "chanceName": chance.text(), "description": $('#description').val()},
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    if (data === 'success') {
+                        $('#applyWinModal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert(data);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+
+        $('#leaveModal .btn-primary').on('click', function () {
+            $.ajax({
+                url: '/apply/leave',
+                type: 'POST',
+                data: $('#leaveForm').serialize(),
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    if (data === 'success') {
+                        $('#leaveModal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert(data);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

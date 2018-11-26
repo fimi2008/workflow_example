@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>发布流程</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<nav th:replace="common/top::top"></nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="common/left::left(2)"></nav>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 class="sub-header">已部署流程</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>流程名称</th>
+                        <th>版本</th>
+                        <th>流程key</th>
+                        <th>发布时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="data : ${list}">
+                        <td th:text="${data.id}">LeaveBill:1:4</td>
+                        <td th:text="${data.name}">请假流程</td>
+                        <td th:text="${data.version}">1</td>
+                        <td th:text="${data.key}">LeaveBill</td>
+                        <td th:text="${data.deploymentTime}">2018-02-25 17:28:35</td>
+                        <td>
+                            <a th:href="@{/delDeployment(deploymentId=${data.deploymentId})}" style="margin-right: 5px;">删除</a>
+                            <a target="_blank" th:href="@{/viewImage(deploymentId=${data.deploymentId},imageName=${data.diagramResourceName})}">查看流程图</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadFileModal">发布流程
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">上传流程</h4>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm">
+                    <div class="form-group">
+                        <label for="fileName">流程名称</label>
+                        <input type="text" class="form-control" name="fileName" id="fileName" placeholder="流程名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="file">流程文件</label>
+                        <input type="file" name="file" id="file">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#uploadFileModal .btn-primary').on('click', function () {
+            var fileName = $('#fileName').val();
+            if (fileName === '') {
+                alert('请填写流程名称');
+                return;
+            }
+            var file = $('#file').val();
+            if (file === null) {
+                alert('请选择上传文件');
+                return;
+            }
+            var index = file.lastIndexOf(".");
+            var ext = file.substr(index + 1);
+            if (ext !== 'zip') {
+                alert('目前只支持zip文件');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append("file", $("#file")[0].files[0]);
+            formData.append("fileName", fileName);
+            $.ajax({
+                url: '/deploy',
+                type: 'POST',
+                data: formData,
+                // 告诉jQuery不要去处理发送的数据
+                processData: false,
+                // 告诉jQuery不要去设置Content-Type请求头
+                contentType: false,
+                beforeSend: function () {
+                    console.log("正在进行，请稍候");
+                },
+                success: function (data) {
+                    if (data === 'success'){
+                        $('#uploadFileModal').modal('hide');
+                        window.location.reload();
+                    }else{
+                        alert(data);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

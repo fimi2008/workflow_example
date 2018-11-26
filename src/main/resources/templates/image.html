@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>查看当前流程图</title>
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/index.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="/js/jquery-1.11.0.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+</head>
+<body>
+<!-- 1.获取到规则流程图 -->
+<img style="position: absolute;top: 0px;left: 0px;" th:src="@{/viewImage(deploymentId=${deploymentId},imageName=${imageName})}">
+
+<!-- 2.根据当前活动的坐标，动态绘制DIV -->
+<div th:style="'position: absolute;border:1px solid red;top:'+${acs.y}+'px;left:'+${acs.x}+'px;width:'+${acs.width}+'px;height:'+${acs.height}+'px;'"></div>
+</body>
+</html>
